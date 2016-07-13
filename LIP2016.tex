@@ -24,53 +24,53 @@ Aleja~{Lotnik\'{o}w} 32/46, PL-02668 Warsaw, Poland}
 ul.~Nowowiejska 15/19, PL-00665 Warsaw, Poland} \cortext[cor1]{jakub@ifpan.edu.pl}
 
 \begin{abstract}
-		In order to achieve the ultimate accuracy of an interferometric particle characterisation technique, often huge data sets
-	must be processed. Both, the inverse problem solving stage, and the data preprocessing for inversion stage, happen to be
-	very time/resources-consuming. Utilising Compute Unified Device Architecture (CUDA) platform for graphics processing units
-	(GPUs) enables a very significant reduction of computation time at a moderate cost, by means of calculation
-	parallelization. We reported using GPU for the inverse problem solving (up to 800-fold speed-up) in our previous paper
-	[Jakubczyk et al., Opto-Electron. Rev., 2016]. Here we report a development of two subroutines utilising GPU at data
-	preprocessing stage: (i) A subroutine, based on ray-tracing, for retrieving information from Mie scattering images
-	obtained with spherically aberrated lens system. (ii) An image processing subroutine, performing: pixel decoding,
-	demosaicing, field-of-view correction, moving average versus observation azimuth angle and data points number rescaling.
-	The image processing GPU subroutine is assisted with a data file-reading CPU subroutine running in parallel. All
-	subroutines are incorporated in our PikeReader application, which we make available on GitHub repository. We obtained an
-	overall $\sim 400$-fold speed-up of calculations at data preprocessing stage in comparison to Matlab-only code running on
-	CPU (single thread).
+        In order to achieve the ultimate accuracy of an interferometric particle characterisation technique, often huge data sets
+    must be processed. Both, the inverse problem solving stage, and the data preprocessing stage for inversion, happen to be
+    very time-consuming and resource-demanding. Utilising Compute Unified Device Architecture (CUDA) platform for graphics processing units
+    (GPUs) enables significant reduction of computation time at a moderate cost, by means of parallel computing.
+    We reported using GPU for the inverse problem solving (up to 800-fold speed-up) in our previous paper
+    [Jakubczyk et al., \textit{Opto-Electron. Rev.}, 2016]. Here we report a development of two subroutines utilising GPU at data
+    preprocessing stage: (i) A subroutine, based on ray-tracing, for retrieving information from Mie scattering images
+    obtained with spherically aberrated lens system. (ii) An image processing subroutine, performing: pixel decoding,
+    demosaicing, field-of-view correction, moving average versus observation azimuth angle and data points number rescaling.
+    The image processing GPU subroutine is assisted with a data file-reading CPU subroutine running in parallel. All
+    subroutines are incorporated in our PikeReader application, which we make available on GitHub repository. We obtained an
+    overall $\sim 400$-fold speed-up of calculations at data preprocessing stage in comparison to Matlab-only code running on
+    CPU (single thread).
 \end{abstract}
 
 \begin{keyword}
-	Mie scattering \sep Compute Unified Device Architecture \sep image processing \sep graphics processing unit \sep optical
-	aberration
+    Mie scattering \sep Compute Unified Device Architecture \sep image processing \sep graphics processing unit \sep optical
+    aberration
 \end{keyword}
 \end{frontmatter}
 
 \section{Introduction}
-		There are many well established interferometric techniques, which are used for particle characterisation, such as: global
-	rainbow technique (GRT), laser imaging for droplet sizing (ILIDS), interferometric particle imaging (IPI), Mie scattering
-	imaging (MSI), interferometric Mie imaging (IMI), etc. (see eg. \cite{Dehaeck} and references therein). We also developed
-	a variant of the method of this class, and used successfully in many experiments with both pure and composite liquids (see
-	e.g. \cite{N2andAir,liquids,RoP,weightvsscatt,Hi-precission}). All these methods require solving some inverse problem in
-	order to retrieve particle characteristics. Since we solve the inverse problem by comparing the experimentally obtained
-	scattered light distributions with the lookup table of Mie-theory-generated patterns, we adopted the name: Mie scattering
-	lookup table method (MSLTM). Under favourable conditions, its accuracy is as high as $\pm 10$~nm (see e.g.
-	\cite{Hi-precission}).
+        There are many well established interferometric techniques, which are used for particle characterisation. Global
+    rainbow technique (GRT), laser imaging for droplet sizing (ILIDS), interferometric particle imaging (IPI), Mie scattering
+    imaging (MSI), interferometric Mie imaging (IMI) are a few to mention (see eg. \cite{Dehaeck} and references therein).
+    We also developed a variant of the method of this class, and used successfully in many experiments with both pure and composite liquids (see
+    e.g. \cite{N2andAir,liquids,RoP,weightvsscatt,Hi-precission}). All these methods require solving an inverse problem in
+    order to retrieve particle characteristics. Since we solve the inverse problem by comparing the experimentally obtained
+    scattered light distributions with the lookup table of Mie-theory-generated patterns, we adopted the name: Mie scattering
+    lookup table method (MSLTM). Under favourable conditions, its accuracy is as high as $\pm 10$~nm (see e.g.
+    \cite{Hi-precission}).
 
-		In order to achieve the ultimate accuracy of a method of this class nowadays, in practice, the experimental data must be
-	processed off-line after collection. With fast, high-resolution cameras, the collected data becomes massive. In our case,
-	data sets amount up to tens of gigabytes, in particular for experiments on slowly evaporating droplets, running for tens
-	of minutes. Thus, in case of MSLTM, the data processing is split into two steps, in order to facilitate it: (i)
-	preprocessing of data for the inverse problem solving, which reduces the amount of data ~70-fold and (ii) the inverse
-	problem solving. Originally, for both steps, we developed software in Matlab. When accuracy-optimised, both Matlab
-	programs can be very time-consuming. In order to resolve this issue, we decided to move the essential parts of our codes
-	to Compute Unified Device Architecture (CUDA) platform making use of graphics processing units (GPUs). We began with the
-	code for the inverse problem solving and obtained up to 800-fold speed-up \cite{Smigacz}. In this work we present the
-	development of a code for fast image processing with GPU (and in parallel on CPU) at the data preprocessing stage. The
-	whole application is called PikeReader and can be downloaded from GitHub repository \cite{PikeReader}. GPU was used at two
-	stages (subroutines): (a) the imaging system analysis, and (b) recorded movie processing. The overall speed-up of
-	calculations at data preprocessing stage was $\sim 400$-fold in comparison to single-thread Matlab code. In practice, the
-	data preprocessing time was reduced to that needed for preparation of required parameters (via PikeReader's Graphical User
-	Interface (GUI)) by the experimenter.
+    Nowadays, to achieve the ultimate accuracy of these interferometric measurement techniques, the experimental data must be processed
+    off-line after recording. With the advent of fast, high resolution cameras, the amount of such data then becomes massively huge.
+    In our case, data sets amount up to tens of gigabytes, in particular for experiments on slowly evaporating droplets, running for tens
+    of minutes. Thus, in case of MSLTM, the data processing is split into two steps, in order to facilitate it: (i)
+    preprocessing of data for the inverse problem solving, which reduces the data set ~70-fold and (ii) the inverse
+    problem solving. For both steps of data processing, we had developed a dedicated software in Matlab. When very high accuracy is required,
+    both Matlab applications can be very time-consuming. In order to resolve this issue, moved the essential parts of our codes
+    to Compute Unified Device Architecture (CUDA) platform making use of graphics processing units (GPUs). We began with the
+    code for the inverse problem solving and obtained up to 800-fold speed-up \cite{Smigacz}. In this work we present the
+    development of a code for fast image processing with GPU (and in parallel on CPU) at the data preprocessing stage. The
+    whole application is called PikeReader and can be downloaded from GitHub repository \cite{PikeReader}. GPU was used at two
+    stages (subroutines): (a) the imaging system analysis, and (b) recorded movie processing. The overall speed-up of
+    calculations at data preprocessing stage was $\sim 400$-fold in comparison to single-thread Matlab code. In practice, the
+    data preprocessing time was reduced to that needed for preparation of required parameters (via PikeReader's Graphical User
+    Interface (GUI)) by the experimenter.
 
 \section{The levitated droplets - experimental setup and data acquisition procedures}
 In our laboratory, at the Institute of Physics, Polish Academy of Sciences, we investigate single evaporating (charged)
@@ -78,8 +78,8 @@ droplets freely levitating in an electrodynamic trap. Electrodynamic levitation 
 used for non-contact trapping (and handling) of microscopic and nanoscopic objects \cite{Major}. By means of an
 appropriately selected configuration of AC and DC electric fields, a particle of specific range of mass to charge ratio
 can be indefinitely kept in a pseudo-potential minimum of (time-averaged) resultant field. A variant of the trap,
-realising such field configuration and suiting our demands, was designed and built in our laboratory. A cutaway drawing of
-the trap is shown in the centre of figure \ref{concept}.
+realising such field configuration and suiting our demands, was designed and built in our laboratory (see e.g.
+\cite{RoP}). A cutaway drawing of the trap is shown in the centre of figure \ref{concept}.
 
 \begin{figure}[h!t!b!]
 \begin{center}
@@ -88,12 +88,12 @@ the trap is shown in the centre of figure \ref{concept}.
 \caption{The basic concept of measurement. The droplet is $\sim 100\times$ enlarged for clarity.}\label{concept}
 \end{figure}
 
-The evaporating droplet levitating in the trap is illuminated with two coherent (laser) beams of different colour and
+The evaporating droplet levitating in the trap is illuminated with two coherent (laser) beams of different wavelength and
 mutually perpendicular polarisation ($p$ and $s$ in respect to the scattering plane), and a sequence of Mie scattering
-patterns (out-of-focus image in figure \ref{concept}) is recorded as a movie. In order to avoid the photophoretic
-instability we use laser beams with rather low power density $\sim 10$ mW/mm$^2$. The analysis of the movie enables us to
-find the temporal evolution of the droplet radius and thus to infer about the evaporation process. As it can be seen in
-figure \ref{concept}, we can also use electrostatic weighting as an auxiliary tool of droplet radius assessment
+patterns (out-of-focus image in figure \ref{concept}) is recorded as a movie. In order to avoid photophoretic instability
+we use laser beams with relatively low power density $\sim 10$ mW/mm$^2$. The analysis of the movie off-line enables us to
+find the temporal evolution of the droplet radius and thus to infer about the droplet evaporation process. As can be seen
+in figure \ref{concept}, we can also use electrostatic weighting as an auxiliary tool for the droplet radius assessment
 \cite{weightvsscatt}.
 
 \section{The motivation and design of the optical system for observation of Mie scattering images}
@@ -113,15 +113,16 @@ spherical aberration, while chromatic aberration is intrinsic to simple spherica
 \begin{center}
 \rotatebox{-90}{\scalebox{0.35}{\includegraphics{setup.eps}}}
 \end{center}
-\caption{Middle: partially assembled climatic chamber with main objectives in place. Top: cutaway drawing of the
+\caption{Middle: partially assembled climatic chamber with main optical system in place. Top: cutaway drawing of the
 electrodynamic trap. The location of the trap in the chamber indicated with (red) solid-and-dashed arrow. Top-right
-corner: main objective assembled.} \label{setup}
+corner: an assembled optical system for Mie scattering imaging.} \label{setup}
 \end{figure}
 
-\subsection{Intensity-corrected ray tracing} However, it can be easily noticed that the information present in a scattering
-pattern is not lost due to aberration and can be fully retrieved in post processing, if the lens system parameters are
-known. Since we worked off-line, we could and were using such procedure very successfully for some time (see e.g.:
-\cite{RoP,liquids,HK-soft_matter,Hi-precission} and references therein). The procedure utilised analytical ray tracing
+\subsection{Intensity-corrected ray tracing}
+It should be noted here that, the information present in a recorded scattering pattern is not lost as a result of
+aberrations and can be fully retrieved in post data processing. However this requires the knowledge of the parameters of
+the lens system. Since we worked off-line, we could and were using such procedure very successfully for some time (see
+e.g.: \cite{liquids,RoP,Hi-precission,HK-soft_matter} and references therein). The procedure used analytical ray tracing
 formulas for circular entrance aperture (introduced between the trap port and the first lens), under assumption of axial
 symmetry of the droplet-lens system (which was fulfilled in our experiments). It required only simple planar trigonometry.
 The distribution (decrease) of transmitted light intensity was accounted for at the detector with the cosine law of
@@ -133,8 +134,8 @@ In our newly developed setup, we wanted to have 8 instead of 4 horizontal ports 
 constricted the lens system even further. In order to keep a wide field of view, we resigned from the circular entrance
 aperture and put the entrance lens closer to the droplet (compare figure \ref{ray-tracing}). This resulted in larger
 aberration. We also wanted to overcome the axial symmetry assumption because of the mechanical limitations of trap/chamber
-manufacturing. Thus, finding the distortion of the field of view (figure \ref{code+results}, bottom-left) required an
-exact ray tracing in 3D (figure \ref{ray-tracing}).
+construction. Thus, finding the distortion of the field of view (figure \ref{code+results}, bottom-left) required an exact
+ray tracing in 3D (figure \ref{ray-tracing}).
 
 Since we still deal with a specific but rather simple problem, we developed a dedicated, intensity-corrected ray tracing
 subroutine, that suits our purposes. It is coded in a straightforward manner. Here we outline its basic steps. We consider
@@ -150,7 +151,7 @@ cross product, which enables solving the set of equations for the refracted ray.
 transmitted light intensity is accounted for each ray at each refraction with the $(\cos \theta) /r^2$ factor again,
 without considering polarisation effects. Since the lenses were anti-reflection coated ($\sim 1$\% reflection), this
 simple method was found quite sufficient. The steps are repeated for each refracting surface. The presence of polarisers
-between the lenses is accounted for by modifying the optical length.
+between the lenses is accounted for by modifying the optical path length.
 \begin{figure}[h!t!b!]
 \begin{center}
 \scalebox{0.35}{\includegraphics{ray-tracing.eps}}
@@ -162,13 +163,13 @@ system.}\label{ray-tracing}
 The subroutine yielded very promising results, it was flexible in sense of the described lens system and it allowed
 determining the droplet position at the first stage of data processing. Unfortunately, when coded in MATLAB, it turned out
 to be very time consuming ($\sim 2$ hours for $9\times 10^6$ rays). However, it can be easily noticed that ray tracing is
-ideal for parallel computing, as different calculation threads do not interact. Having already some very promising
-experience in this field \cite{Smigacz}, we decided to make use of GPU (as a powerful and a relatively cheap solution) and
-rewrote our subroutine accordingly on CUDA platform. The code was also generally optimised in the process. The project
-turned out very successful, as it made the calculation of the distortion of the field of view (nearly) instantaneous
-($<0.3$ s for $9\times 10^6$ rays @ GTX~580 and $<0.8$ s for $625\times 10^6$ rays @ GTX Titan Black. We hope, that this
-will make possible accounting for (eventual) droplet movements for each movie frame. However, the so far manual
-parameter-preparation stage will have to be automated.
+ideal for parallel computing, as different calculation threads do not interact. Having already had some very promising
+experience in this application \cite{Smigacz}, we decided to make use of GPU (as a powerful and a relatively cheap
+solution) and rewrote our subroutine accordingly on CUDA platform. The code was also generally optimised in the process.
+The project turned out very successful, as it made the calculation of the distortion of the field of view (nearly)
+instantaneous ($<0.3$ s for $9\times 10^6$ rays @ GTX~580 and $<0.8$ s for $625\times 10^6$ rays @ GTX Titan Black. We
+hope, that this will make possible accounting for (eventual) droplet movements for each movie frame. However, the so far
+manual parameter-preparation stage will have to be automated.
 
 \subsection{Ray-tracing CUDA algorithm}
 \begin{figure}[h!t!b!]
@@ -196,8 +197,8 @@ shouldn't write to the same memory address.
 \item In order to find the values of cells of the intensity-distortion array (the distortion of a flat light intensity
 field in FoV), adding values from different threads is necessary. The result of unsynchronised additions from simultaneous
 threads into a variable at a single address may be indeterministic. To avoid indeterministic results, the so called,
-atomic addition is used. The atomic function is a special subroutine witch guarantees indivisible access to variable at
-specific address. It requires Compute Capability 2.0 or higher. In our case, due to the nature of the problem, the
+atomic addition is used. The atomic function is a special subroutine which guarantees indivisible access to a variable at
+a specific address. It requires Compute Capability 2.0 or higher. In our case, due to the nature of the problem, the
 synchronisation operation isn't very costly, since only few threads need to access the same cell of the image array.
 
 \item Finally, the results are copied back from GPU memory into MATLAB memory.
@@ -241,7 +242,7 @@ Distortion menu). Intensity arrays for each colour must be normalised and have c
 
 A very low execution time of \texttt{IntensCalc} was archived by identifying two major bottlenecks. Reading movie from a
 hard drive turned out to be the first major bottleneck. Storage device access times can not be directly surpassed
-programisticly, so it is optimal to read from the hard drive continuously. Accordingly, we decided to create a separate,
+programmatically, so it is optimal to read from the hard drive continuously. Accordingly, we decided to create a separate,
 hard drive-reading-only, thread, running in parallel on CPU. Secondly, we observed that, rather obviously, processing
 every pixel of every frame on CPU is very time consuming. We decided that these calculations should be performed in
 parallel on CUDA capable GPU: frame by frame, one frame at a time.
