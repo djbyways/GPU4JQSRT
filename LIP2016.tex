@@ -24,53 +24,53 @@ Aleja~{Lotnik\'{o}w} 32/46, PL-02668 Warsaw, Poland}
 ul.~Nowowiejska 15/19, PL-00665 Warsaw, Poland} \cortext[cor1]{jakub@ifpan.edu.pl}
 
 \begin{abstract}
-In order to achieve the ultimate accuracy of an interferometric particle characterisation technique, often huge data sets
-must be processed. Both, the inverse problem solving stage, and the data preprocessing for inversion stage, happen to be
-very time/resources-consuming. Utilising Compute Unified Device Architecture (CUDA) platform for graphics processing units
-(GPUs) enables a very significant reduction of computation time at a moderate cost, by means of calculation
-parallelization. We reported using GPU for the inverse problem solving (up to 800-fold speed-up) in our previous paper
-[Jakubczyk et al., Opto-Electron. Rev., 2016]. Here we report a development of two subroutines utilising GPU at data
-preprocessing stage: (i) A subroutine, based on ray-tracing, for retrieving information from Mie scattering images
-obtained with spherically aberrated lens system. (ii) An image processing subroutine, performing: pixel decoding,
-demosaicing, field-of-view correction, moving average versus observation azimuth angle and data points number rescaling.
-The image processing GPU subroutine is assisted with a data file-reading CPU subroutine running in parallel. All
-subroutines are incorporated in our PikeReader application, which we make available on GitHub repository. We obtained an
-overall $\sim 400$-fold speed-up of calculations at data preprocessing stage in comparison to Matlab-only code running on
-CPU (single thread).
+		In order to achieve the ultimate accuracy of an interferometric particle characterisation technique, often huge data sets
+	must be processed. Both, the inverse problem solving stage, and the data preprocessing for inversion stage, happen to be
+	very time/resources-consuming. Utilising Compute Unified Device Architecture (CUDA) platform for graphics processing units
+	(GPUs) enables a very significant reduction of computation time at a moderate cost, by means of calculation
+	parallelization. We reported using GPU for the inverse problem solving (up to 800-fold speed-up) in our previous paper
+	[Jakubczyk et al., Opto-Electron. Rev., 2016]. Here we report a development of two subroutines utilising GPU at data
+	preprocessing stage: (i) A subroutine, based on ray-tracing, for retrieving information from Mie scattering images
+	obtained with spherically aberrated lens system. (ii) An image processing subroutine, performing: pixel decoding,
+	demosaicing, field-of-view correction, moving average versus observation azimuth angle and data points number rescaling.
+	The image processing GPU subroutine is assisted with a data file-reading CPU subroutine running in parallel. All
+	subroutines are incorporated in our PikeReader application, which we make available on GitHub repository. We obtained an
+	overall $\sim 400$-fold speed-up of calculations at data preprocessing stage in comparison to Matlab-only code running on
+	CPU (single thread).
 \end{abstract}
 
 \begin{keyword}
-Mie scattering \sep Compute Unified Device Architecture \sep image processing \sep graphics processing unit \sep optical
-aberration
+	Mie scattering \sep Compute Unified Device Architecture \sep image processing \sep graphics processing unit \sep optical
+	aberration
 \end{keyword}
 \end{frontmatter}
 
 \section{Introduction}
-There are many well established interferometric techniques, which are used for particle characterisation, such as: global
-rainbow technique (GRT), laser imaging for droplet sizing (ILIDS), interferometric particle imaging (IPI), Mie scattering
-imaging (MSI), interferometric Mie imaging (IMI), etc. (see eg. \cite{Dehaeck} and references therein). We also developed
-a variant of the method of this class, and used successfully in many experiments with both pure and composite liquids (see
-e.g. \cite{N2andAir,liquids,RoP,weightvsscatt,Hi-precission}). All these methods require solving some inverse problem in
-order to retrieve particle characteristics. Since we solve the inverse problem by comparing the experimentally obtained
-scattered light distributions with the lookup table of Mie-theory-generated patterns, we adopted the name: Mie scattering
-lookup table method (MSLTM). Under favourable conditions, its accuracy is as high as $\pm 10$~nm (see e.g.
-\cite{Hi-precission}).
+		There are many well established interferometric techniques, which are used for particle characterisation, such as: global
+	rainbow technique (GRT), laser imaging for droplet sizing (ILIDS), interferometric particle imaging (IPI), Mie scattering
+	imaging (MSI), interferometric Mie imaging (IMI), etc. (see eg. \cite{Dehaeck} and references therein). We also developed
+	a variant of the method of this class, and used successfully in many experiments with both pure and composite liquids (see
+	e.g. \cite{N2andAir,liquids,RoP,weightvsscatt,Hi-precission}). All these methods require solving some inverse problem in
+	order to retrieve particle characteristics. Since we solve the inverse problem by comparing the experimentally obtained
+	scattered light distributions with the lookup table of Mie-theory-generated patterns, we adopted the name: Mie scattering
+	lookup table method (MSLTM). Under favourable conditions, its accuracy is as high as $\pm 10$~nm (see e.g.
+	\cite{Hi-precission}).
 
-In order to achieve the ultimate accuracy of a method of this class nowadays, in practice, the experimental data must be
-processed off-line after collection. With fast, high-resolution cameras, the collected data becomes massive. In our case,
-data sets amount up to tens of gigabytes, in particular for experiments on slowly evaporating droplets, running for tens
-of minutes. Thus, in case of MSLTM, the data processing is split into two steps, in order to facilitate it: (i)
-preprocessing of data for the inverse problem solving, which reduces the amount of data ~70-fold and (ii) the inverse
-problem solving. Originally, for both steps, we developed software in Matlab. When accuracy-optimised, both Matlab
-programs can be very time-consuming. In order to resolve this issue, we decided to move the essential parts of our codes
-to Compute Unified Device Architecture (CUDA) platform making use of graphics processing units (GPUs). We began with the
-code for the inverse problem solving and obtained up to 800-fold speed-up \cite{Smigacz}. In this work we present the
-development of a code for fast image processing with GPU (and in parallel on CPU) at the data preprocessing stage. The
-whole application is called PikeReader and can be downloaded from GitHub repository \cite{PikeReader}. GPU was used at two
-stages (subroutines): (a) the imaging system analysis, and (b) recorded movie processing. The overall speed-up of
-calculations at data preprocessing stage was $\sim 400$-fold in comparison to single-thread Matlab code. In practice, the
-data preprocessing time was reduced to that needed for preparation of required parameters (via PikeReader's Graphical User
-Interface (GUI)) by the experimenter.
+		In order to achieve the ultimate accuracy of a method of this class nowadays, in practice, the experimental data must be
+	processed off-line after collection. With fast, high-resolution cameras, the collected data becomes massive. In our case,
+	data sets amount up to tens of gigabytes, in particular for experiments on slowly evaporating droplets, running for tens
+	of minutes. Thus, in case of MSLTM, the data processing is split into two steps, in order to facilitate it: (i)
+	preprocessing of data for the inverse problem solving, which reduces the amount of data ~70-fold and (ii) the inverse
+	problem solving. Originally, for both steps, we developed software in Matlab. When accuracy-optimised, both Matlab
+	programs can be very time-consuming. In order to resolve this issue, we decided to move the essential parts of our codes
+	to Compute Unified Device Architecture (CUDA) platform making use of graphics processing units (GPUs). We began with the
+	code for the inverse problem solving and obtained up to 800-fold speed-up \cite{Smigacz}. In this work we present the
+	development of a code for fast image processing with GPU (and in parallel on CPU) at the data preprocessing stage. The
+	whole application is called PikeReader and can be downloaded from GitHub repository \cite{PikeReader}. GPU was used at two
+	stages (subroutines): (a) the imaging system analysis, and (b) recorded movie processing. The overall speed-up of
+	calculations at data preprocessing stage was $\sim 400$-fold in comparison to single-thread Matlab code. In practice, the
+	data preprocessing time was reduced to that needed for preparation of required parameters (via PikeReader's Graphical User
+	Interface (GUI)) by the experimenter.
 
 \section{The levitated droplets - experimental setup and data acquisition procedures}
 In our laboratory, at the Institute of Physics, Polish Academy of Sciences, we investigate single evaporating (charged)
@@ -121,7 +121,7 @@ corner: main objective assembled.} \label{setup}
 \subsection{Intensity-corrected ray tracing} However, it can be easily noticed that the information present in a scattering
 pattern is not lost due to aberration and can be fully retrieved in post processing, if the lens system parameters are
 known. Since we worked off-line, we could and were using such procedure very successfully for some time (see e.g.:
-\cite{RoP,liquids,HK-soft matter,Hi-precission} and references therein). The procedure utilised analytical ray tracing
+\cite{RoP,liquids,HK-soft_matter,Hi-precission} and references therein). The procedure utilised analytical ray tracing
 formulas for circular entrance aperture (introduced between the trap port and the first lens), under assumption of axial
 symmetry of the droplet-lens system (which was fulfilled in our experiments). It required only simple planar trigonometry.
 The distribution (decrease) of transmitted light intensity was accounted for at the detector with the cosine law of
